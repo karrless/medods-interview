@@ -20,7 +20,7 @@ services:
       start_period: 10s
       timeout: 5s
 
-  auth_service:
+  auth_service_medods:
     env_file:
       - .env
     build:
