@@ -35,8 +35,8 @@ func NewAuthService(ctx *context.Context, secretKey string, repo AuthRepo, email
 }
 
 // getTokens returns access, refresh tokens and public key
-func getTokens(guid, ip string) (string, string, string, error) {
-	accessToken := jwt.NewAccessToken(guid, ip, "secret")
+func (ac *AuthService) getTokens(guid, ip string) (string, string, string, error) {
+	accessToken := jwt.NewAccessToken(guid, ip, ac.secretKey)
 	refreshToken, err := jwt.NewRefreshToken()
 	if err != nil {
 		return "", "", "", errors.ErrCreateRefreshToken
@@ -84,7 +84,7 @@ func (uc *AuthService) GetAccessToken(guid, ip string) (accessToken, refreshToke
 	}
 
 	accessToken, refreshToken, publicKey, err = retryCreateTokens(func() (string, string, string, error) {
-		accessToken, refreshToken, publicKey, err := getTokens(guid, ip)
+		accessToken, refreshToken, publicKey, err := uc.getTokens(guid, ip)
 		if err != nil {
 			return "", "", "", err
 		}
@@ -124,7 +124,7 @@ func (uc *AuthService) RefreshToken(refresh, public, ip string) (accessToken, re
 	}
 
 	accessToken, refreshToken, publicKey, err = retryCreateTokens(func() (string, string, string, error) {
-		accessToken, refreshToken, publicKey, err := getTokens(user.GUID, ip)
+		accessToken, refreshToken, publicKey, err := uc.getTokens(user.GUID, ip)
 		if err != nil {
 			return "", "", "", err
 		}
