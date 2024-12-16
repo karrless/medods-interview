@@ -32,23 +32,3 @@ func NewRefreshToken() (string, error) {
 
 	return fmt.Sprintf("%x", b), nil
 }
-
-// ValidateToken validates a token
-func ValidateToken(accessToken, secret string) (*jwt.MapClaims, error) {
-	token, err := jwt.Parse(accessToken, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
-		}
-
-		return []byte(secret), nil
-	})
-
-	if err != nil {
-		return nil, err
-	}
-	data, ok := token.Claims.(jwt.MapClaims)
-	if !ok || !token.Valid {
-		return nil, fmt.Errorf("invalid token")
-	}
-	return &data, nil
-}
